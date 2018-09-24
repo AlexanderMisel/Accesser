@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-HOSTS_URL1 = 'https://raw.githubusercontent.com/googlehosts/hosts/master/hosts-files/hosts'
-HOSTS_URL2 = 'https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts'
 server_address = ('127.0.0.1', 443)
 
 import argparse
@@ -129,22 +127,9 @@ if __name__ == '__main__':
 
     config = configparser.ConfigParser()
     config.read('setting.ini')
-    
-    if not os.path.exists('hosts'):
-        import urllib.request
-        logging.info('hosts file not exit, downloading...')
-        try:
-            local_filename, headers = urllib.request.urlretrieve(HOSTS_URL1, 'hosts')
-        except urllib.error.URLError as e:
-            logging.warning(e)
-            logging.warning('try another hosts url')
-            local_filename, headers = urllib.request.urlretrieve(HOSTS_URL2, 'hosts')
-        logging.info('saved to: '+local_filename)
+
     hosts = re.findall(r'(\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})\s+(\S+)', open('hosts').read())
     rhosts = {k:v for v,k in hosts}
-    for domain in config['HOSTS']:
-        rhosts[domain] = config['HOSTS'][domain]
-    
     check_hostname = int(config['setting']['check_hostname'])
     now_dn_st_mtime = os.stat('domains.txt').st_mtime
     domainsupdate = False
